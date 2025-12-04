@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@property --border-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: "<angle>";
+}
+/* ADD THIS AT THE TOP – AFTER @tailwind utilities */
+@property --color-primary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0891b2;
+}
+
+@property --color-primary-hover {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #067a94;
+}
+
+@property --color-primary-light {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0ea5e9;
+}
+/* SMOOTH TRANSITION FOR ALL ELEMENTS USING THE VARIABLE */
+*,
+*::before,
+*::after {
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    --color-primary 0.3s ease,
+    --color-primary-light 0.3s ease ,
+    --color-primary-hover 0.3s ease;
+}
+
+/* OPTIONAL: Add a subtle glow pulse on active elements */
+.hover-glow:hover {
+  filter: drop-shadow(0 0 8px var(--color-primary));
+  transition: filter 0.3s ease;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- DEFAULT (DARK) ---------- */
+:root {
+  --color-primary: #0891b2;
+  --color-primary-hover: #067a94;
+  --color-primary-light: #0ea5e9;
+
+  --bg-main: #0f172a;      /* slate-900 */
+  --bg-secondary: #1e293b; /* slate-800 */
+  --bg-card: #1e293b;
+  --text-primary: #f1f5f9;  /* slate-100 */
+  --text-secondary: #94a3b8;/* slate-400 */
+  --text-muted: #64748b;   /* slate-500 */
+  --border: #334155;       /* slate-700 */
+}
+
+/* ---------- LIGHT MODE ---------- */
+.light {
+ 
+
+  --bg-main: #f1f5f9;      /* slate-100 */
+  --bg-secondary: #e2e8f0; /* slate-200 */
+  --bg-card: #ffffff;
+  --text-primary: #1e293b; /* slate-800 */
+  --text-secondary: #475569;/* slate-600 */
+  --text-muted: #64748b;   /* slate-500 */
+  --border: #cbd5e1;       /* slate-300 */
+}
+
+/* ---------- DYNAMIC PRIMARY THEMES ---------- */
+.theme-cyan      { --color-primary: #0891b2; --color-primary-hover: #067a94; }
+.theme-lightgreen{ --color-primary: #2ae903; --color-primary-hover: #22c703; }
+.theme-yellow    { --color-primary: #ffff00; --color-primary-hover: #e6e600; }
+.theme-red       { --color-primary: #f91616; --color-primary-hover: #d91414; }
+.theme-blue      { --color-primary: #3b82f6; --color-primary-hover: #2563eb; }
+.theme-green     { --color-primary: #10b981; --color-primary-hover: #059669; }
+.theme-purple    { --color-primary: #8b5cf6; --color-primary-hover: #7c3aed; }
+.theme-pink      { --color-primary: #ec4899; --color-primary-hover: #db2777; }
+.theme-orange    { --color-primary: #f97316; --color-primary-hover: #ea580c; }
+
+.theme-teal      { --color-primary: #14b8a6; --color-primary-hover: #0d9488; }
+.theme-indigo    { --color-primary: #6366f1; --color-primary-hover: #4f46e5; }
+.theme-lime      { --color-primary: #84cc16; --color-primary-hover: #65a30d; }
+.theme-amber     { --color-primary: #f59e0b; --color-primary-hover: #d97706; }
+.theme-rose      { --color-primary: #f43f5e; --color-primary-hover: #e11d48; }
+.theme-violet    { --color-primary: #a78bfa; --color-primary-hover: #8b5cf6; }
+.theme-emerald   { --color-primary: #34d399; --color-primary-hover: #10b981; }
+.theme-sky       { --color-primary: #0ea5e9; --color-primary-hover: #0284c7; }
+.theme-fuchsia   { --color-primary: #d946ef; --color-primary-hover: #c026d3; }
+.theme-slate     { --color-primary: #64748b; --color-primary-hover: #475569; }
+.theme-zinc      { --color-primary: #71717a; --color-primary-hover: #52525b; }
+/* ---------- RE-USABLE CLASSES ---------- */
+.input {
+  @apply w-full bg-[var(--bg-secondary)] bg-opacity-50 border border-[var(--border)] rounded-lg py-2 pl-10 pr-4 text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent;
+}
+
+.input-search {
+  @apply outline-none w-full bg-[var(--bg-main)] bg-opacity-50 border border-[var(--border)] rounded-lg py-1.5 pl-7 pr-4 text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-opacity-50  focus:border-[var(--color-primary)] focus:border-opacity-50;
+}
+.auth-input-icon { @apply absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-primary)] size-5; }
+.auth-input-icon-search { @apply absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-primary)] size-3 font-light; }
+.auth-input-label { @apply block text-sm font-medium text-[var(--text-secondary)] mb-2; }
+
+.auth-badge { @apply inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-[var(--color-primary)] text-[var(--text-primary)]; }
+.auth-btn   { @apply w-full bg-[var(--color-primary)] text-white rounded-lg py-2.5 font-medium hover:bg-[var(--color-primary-hover)] focus:ring-2 focus:ring-[var(--color-primary)]; }
+.auth-link  { @apply px-4 py-2 inline-block bg-[var(--color-primary-hover)] bg-opacity-10 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-sm transition-colors; }
+
+.animate-progress { animation: progress linear forwards; }
+@keyframes progress { from { width:0%; } to { width:100%; } }
