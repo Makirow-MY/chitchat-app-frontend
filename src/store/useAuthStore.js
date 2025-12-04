@@ -48,6 +48,8 @@ get().setupConnectionRecovery(); // ← ADD THIS LINE
 get().connectSocket();
 get().setupConnectionRecovery(); // ← ADD THIS LINE
     } catch (error) {
+      console.log("Error in signup:", error);
+      
       toast.error(error.response?.data?.message || "Error signing up");
     } finally {
       set({ isSigningUp: false });
@@ -64,6 +66,7 @@ get().setupConnectionRecovery(); // ← ADD THIS LINE
 get().connectSocket();
 get().setupConnectionRecovery(); // ← ADD THIS LINE
     } catch (error) {
+      console.error("Error in login:", error);
       toast.error(error.response?.data?.message || "Error logging in");
     } finally {
       set({ isLoggingIn: false });
