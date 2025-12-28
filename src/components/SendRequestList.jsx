@@ -85,7 +85,7 @@ function SendRequestList() {
       {filteredUsers.map((user) => (
         <div
           key={user._id}
-          className="bg-slate-900 p-4 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition-colors flex justify-between items-center"
+          className="bg-[var(--bg-main)] p-4 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition-colors flex justify-between items-center"
         >
           <div className="flex items-center gap-3">
             <div className={`avatar `}>

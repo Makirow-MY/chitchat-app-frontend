@@ -86,7 +86,7 @@ function MessageInput() {
         });
       } catch (error) {
         console.error("FFmpeg load error:", error);
-       // toast.error("Failed to load video processing module");
+       // //toast.error("Failed to load video processing module");
       }
     };
     loadFFmpeg();
@@ -140,7 +140,7 @@ function MessageInput() {
         resolve(video.duration);
       };
       video.onerror = () => {
-        toast.error("Failed to load video metadata");
+        //toast.error("Failed to load video metadata");
         resolve(0);
       };
       video.src = URL.createObjectURL(file);
@@ -181,7 +181,7 @@ function MessageInput() {
     const files = Array.from(e.target.files);
     if (!files.length) return;
     if (type === "document" && files.length > 10) {
-      toast.error("Cannot attach more than 10 documents at once");
+      //toast.error("Cannot attach more than 10 documents at once");
       return;
     }
     const supportedExtensions = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "rtf", "zip"];
@@ -210,11 +210,11 @@ function MessageInput() {
       const localUrl = URL.createObjectURL(file); // Create blob URL for UI
       if (type === "document") {
         if (!supportedExtensions.includes(ext)) {
-          toast.error(`Unsupported file type: .${ext}`);
+          //toast.error(`Unsupported file type: .${ext}`);
           return null;
         }
         if (file.size > maxSize) {
-          toast.error(`File ${file.name} exceeds 2 GB limit`);
+          //toast.error(`File ${file.name} exceeds 2 GB limit`);
           return null;
         }
         setIsLoadingThumbnail(true);
@@ -228,7 +228,7 @@ function MessageInput() {
             reader.readAsDataURL(file);
           });
         } catch (err) {
-          toast.error(`Failed to read file: ${file.name}`);
+          //toast.error(`Failed to read file: ${file.name}`);
           return null;
         } finally {
           setIsLoadingThumbnail(false);
@@ -257,7 +257,7 @@ function MessageInput() {
             reader.readAsDataURL(file);
           });
         } catch (err) {
-          toast.error(`Failed to read video: ${file.name}`);
+          //toast.error(`Failed to read video: ${file.name}`);
           return null;
         }
         return { type, file, data:base64, localUrl, name: file.name, duration, mimeType };
@@ -273,7 +273,7 @@ function MessageInput() {
             reader.readAsDataURL(file);
           });
         } catch (err) {
-          toast.error(`Failed to read audio file: ${file.name}`);
+          //toast.error(`Failed to read audio file: ${file.name}`);
           return null;
         }
         const attachmentData = { type, preview, data:base64, file, localUrl, name: file.name, mimeType, duration: 0 };
@@ -285,7 +285,7 @@ function MessageInput() {
             resolve();
           };
           audio.onerror = () => {
-            toast.error(`Failed to load audio metadata: ${file.name}`);
+            //toast.error(`Failed to load audio metadata: ${file.name}`);
             resolve();
           };
         });
@@ -300,7 +300,7 @@ function MessageInput() {
             reader.readAsDataURL(file);
           });
         } catch (err) {
-          toast.error(`Failed to read file: ${file.name}`);
+          //toast.error(`Failed to read file: ${file.name}`);
           return null;
         }
          const attachmentData = { type, preview:null, data: base64, localUrl, name: file.name, mimeType };
@@ -315,7 +315,7 @@ function MessageInput() {
               resolve();
             };
             audio.onerror = () => {
-              toast.error(`Failed to load audio metadata: ${file.name}`);
+              //toast.error(`Failed to load audio metadata: ${file.name}`);
               resolve();
             };
           });
@@ -357,12 +357,12 @@ function MessageInput() {
   };
   const handleTrim = async () => {
     if (!ffmpegRef.current || !videoSrc) {
-      toast.error("Video processing module not loaded");
+      //toast.error("Video processing module not loaded");
       return;
     }
     const { start, end } = trimRange;
     if (end - start > 90) {
-      toast.error("Trimmed video cannot exceed 1:30");
+      //toast.error("Trimmed video cannot exceed 1:30");
       return;
     }
     try {
@@ -393,7 +393,7 @@ function MessageInput() {
       }
     } catch (error) {
       console.error("Trimming error:", error);
-      toast.error("Failed to trim video");
+      //toast.error("Failed to trim video");
     }
   };
 console.log(replyTo)
@@ -450,7 +450,7 @@ console.log(replyTo)
           setAttachments((prev) => prev.map((a) => (a.localUrl === localUrl ? { ...a, duration: audio.duration } : a)));
         };
         audio.onerror = () => {
-          toast.error("Failed to load recorded audio metadata");
+          //toast.error("Failed to load recorded audio metadata");
         };
         stream.getTracks().forEach((track) => track.stop());
       };
@@ -463,7 +463,7 @@ console.log(replyTo)
       }, 1000);
     
     } catch (error) {
-      toast.error("Failed to start recording: Microphone access denied or unavailable");
+      //toast.error("Failed to start recording: Microphone access denied or unavailable");
       console.error(error);
     }
   };
@@ -498,7 +498,7 @@ console.log(replyTo)
         if (seconds >= 120) stopVoiceRecording(); // max 60s
       }, 1000);
     } catch (err) {
-      toast.error("Microphone access denied");
+      //toast.error("Microphone access denied");
     }
     };
     const stopVoiceRecording = () => {
@@ -527,7 +527,7 @@ console.log(replyTo)
       }
       setShowCamera(true);
     } catch (err) {
-      toast.error("Camera access denied");
+      //toast.error("Camera access denied");
     }
   };
   const flipCamera = () => {
@@ -586,7 +586,7 @@ console.log(replyTo)
   };
   const handleCrop = useCallback(() => {
     if (!croppedAreaPixels || cropIndex < 0 || cropIndex >= attachments.length || !attachments[cropIndex].localUrl) {
-      toast.error("Invalid image data for cropping");
+      //toast.error("Invalid image data for cropping");
       setShowCropModal(false);
       setCropIndex(-1);
       return;
@@ -627,13 +627,13 @@ console.log(replyTo)
         }, "image/jpeg");
       };
       image.onerror = () => {
-        toast.error("Failed to load image for cropping");
+        //toast.error("Failed to load image for cropping");
         setShowCropModal(false);
         setCropIndex(-1);
       };
     } catch (e) {
       console.error("Crop error:", e);
-      toast.error("Failed to crop image");
+      //toast.error("Failed to crop image");
       setShowCropModal(false);
       setCropIndex(-1);
     }
@@ -684,11 +684,11 @@ const handleSendMessage = useCallback(
     async (e) => {
       e.preventDefault();
       if (!text.trim() && !attachments.length) {
-        toast.error("Message or attachment is required");
+        //toast.error("Message or attachment is required");
         return;
       }
       if (!selectedUser && !selectedGroup) {
-        toast.error("No recipient selected");
+        //toast.error("No recipient selected");
         return;
       }
       if (isSoundEnabled) playRandomKeyStrokeSound();
@@ -763,7 +763,7 @@ isGroup ? undefined : chatId
         if (docInputRef.current) docInputRef.current.value = "";
         if (audioInputRef.current) audioInputRef.current.value = "";
      } catch (error) {
-        toast.error("Failed to send message");
+        //toast.error("Failed to send message");
         console.error("Send message error:", error);
       }
     },
@@ -1119,8 +1119,7 @@ isGroup ? undefined : chatId
             <div
               onClick={(e) => {
                 e.preventDefault();
-                 }}
-              onMouseEnter={(e) => {
+               
                  setAttached(true);
                 setShowEmojiPicker(false);
                
@@ -1130,7 +1129,8 @@ isGroup ? undefined : chatId
               <MdAttachFile size={24} />
             </div>
             <div
-              onMouseEnter={(e) => {
+              onClick={(e) => {
+                 e.preventDefault();
                 setShowEmojiPicker(true);
                 setAttached(false);
               }}
@@ -1527,7 +1527,7 @@ export default MessageInput;
 //         });
 //       } catch (error) {
 //         console.error("FFmpeg load error:", error);
-//        // toast.error("Failed to load video processing module");
+//        // //toast.error("Failed to load video processing module");
 //       }
 //     };
 //     loadFFmpeg();
@@ -1580,7 +1580,7 @@ export default MessageInput;
 //         resolve(video.duration);
 //       };
 //       video.onerror = () => {
-//         toast.error("Failed to load video metadata");
+//         //toast.error("Failed to load video metadata");
 //         resolve(0);
 //       };
 //       video.src = URL.createObjectURL(file);
@@ -1622,7 +1622,7 @@ export default MessageInput;
 //     const files = Array.from(e.target.files);
 //     if (!files.length) return;
 //     if (type === "document" && files.length > 10) {
-//       toast.error("Cannot attach more than 10 documents at once");
+//       //toast.error("Cannot attach more than 10 documents at once");
 //       return;
 //     }
 //     const supportedExtensions = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "rtf", "zip"];
@@ -1651,11 +1651,11 @@ export default MessageInput;
 //       const localUrl = URL.createObjectURL(file); // Create blob URL for UI
 //       if (type === "document") {
 //         if (!supportedExtensions.includes(ext)) {
-//           toast.error(`Unsupported file type: .${ext}`);
+//           //toast.error(`Unsupported file type: .${ext}`);
 //           return null;
 //         }
 //         if (file.size > maxSize) {
-//           toast.error(`File ${file.name} exceeds 2 GB limit`);
+//           //toast.error(`File ${file.name} exceeds 2 GB limit`);
 //           return null;
 //         }
 //         setIsLoadingThumbnail(true);
@@ -1669,7 +1669,7 @@ export default MessageInput;
 //             reader.readAsDataURL(file);
 //           });
 //         } catch (err) {
-//           toast.error(`Failed to read file: ${file.name}`);
+//           //toast.error(`Failed to read file: ${file.name}`);
 //           return null;
 //         } finally {
 //           setIsLoadingThumbnail(false);
@@ -1698,7 +1698,7 @@ export default MessageInput;
 //             reader.readAsDataURL(file);
 //           });
 //         } catch (err) {
-//           toast.error(`Failed to read video: ${file.name}`);
+//           //toast.error(`Failed to read video: ${file.name}`);
 //           return null;
 //         }
 //         return { type, file, data:base64, localUrl, name: file.name, duration, mimeType };
@@ -1714,7 +1714,7 @@ export default MessageInput;
 //             reader.readAsDataURL(file);
 //           });
 //         } catch (err) {
-//           toast.error(`Failed to read audio file: ${file.name}`);
+//           //toast.error(`Failed to read audio file: ${file.name}`);
 //           return null;
 //         }
 //         const attachmentData = { type, preview, data:base64, file, localUrl, name: file.name, mimeType, duration: 0 };
@@ -1726,7 +1726,7 @@ export default MessageInput;
 //             resolve();
 //           };
 //           audio.onerror = () => {
-//             toast.error(`Failed to load audio metadata: ${file.name}`);
+//             //toast.error(`Failed to load audio metadata: ${file.name}`);
 //             resolve();
 //           };
 //         });
@@ -1741,7 +1741,7 @@ export default MessageInput;
 //             reader.readAsDataURL(file);
 //           });
 //         } catch (err) {
-//           toast.error(`Failed to read file: ${file.name}`);
+//           //toast.error(`Failed to read file: ${file.name}`);
 //           return null;
 //         }
 //          const attachmentData = { type, preview:null, data: base64, localUrl, name: file.name, mimeType };
@@ -1756,7 +1756,7 @@ export default MessageInput;
 //               resolve();
 //             };
 //             audio.onerror = () => {
-//               toast.error(`Failed to load audio metadata: ${file.name}`);
+//               //toast.error(`Failed to load audio metadata: ${file.name}`);
 //               resolve();
 //             };
 //           });
@@ -1785,12 +1785,12 @@ export default MessageInput;
 //   };
 //   const handleTrim = async () => {
 //     if (!ffmpegRef.current || !videoSrc) {
-//       toast.error("Video processing module not loaded");
+//       //toast.error("Video processing module not loaded");
 //       return;
 //     }
 //     const { start, end } = trimRange;
 //     if (end - start > 90) {
-//       toast.error("Trimmed video cannot exceed 1:30");
+//       //toast.error("Trimmed video cannot exceed 1:30");
 //       return;
 //     }
 //     try {
@@ -1821,7 +1821,7 @@ export default MessageInput;
 //       }
 //     } catch (error) {
 //       console.error("Trimming error:", error);
-//       toast.error("Failed to trim video");
+//       //toast.error("Failed to trim video");
 //     }
 //   };
 // console.log(replyTo)
@@ -1879,7 +1879,7 @@ export default MessageInput;
 //           setAttachments((prev) => prev.map((a) => (a.localUrl === localUrl ? { ...a, duration: audio.duration } : a)));
 //         };
 //         audio.onerror = () => {
-//           toast.error("Failed to load recorded audio metadata");
+//           //toast.error("Failed to load recorded audio metadata");
 //         };
 //         stream.getTracks().forEach((track) => track.stop());
 //       };
@@ -1893,7 +1893,7 @@ export default MessageInput;
 //       }, 1000);
       
 //     } catch (error) {
-//       toast.error("Failed to start recording: Microphone access denied or unavailable");
+//       //toast.error("Failed to start recording: Microphone access denied or unavailable");
 //       console.error(error);
 //     }
 //   };
@@ -1932,7 +1932,7 @@ export default MessageInput;
 //       }, 1000);
 
 //     } catch (err) {
-//       toast.error("Microphone access denied");
+//       //toast.error("Microphone access denied");
 //     }
 //     };
   
@@ -1949,7 +1949,7 @@ export default MessageInput;
   
 //   const handleCrop = useCallback(() => {
 //     if (!croppedAreaPixels || cropIndex < 0 || cropIndex >= attachments.length || !attachments[cropIndex].localUrl) {
-//       toast.error("Invalid image data for cropping");
+//       //toast.error("Invalid image data for cropping");
 //       setShowCropModal(false);
 //       setCropIndex(-1);
 //       return;
@@ -1990,13 +1990,13 @@ export default MessageInput;
 //         }, "image/jpeg");
 //       };
 //       image.onerror = () => {
-//         toast.error("Failed to load image for cropping");
+//         //toast.error("Failed to load image for cropping");
 //         setShowCropModal(false);
 //         setCropIndex(-1);
 //       };
 //     } catch (e) {
 //       console.error("Crop error:", e);
-//       toast.error("Failed to crop image");
+//       //toast.error("Failed to crop image");
 //       setShowCropModal(false);
 //       setCropIndex(-1);
 //     }
@@ -2049,11 +2049,11 @@ export default MessageInput;
 //     async (e) => {
 //       e.preventDefault();
 //       if (!text.trim() && !attachments.length) {
-//         toast.error("Message or attachment is required");
+//         //toast.error("Message or attachment is required");
 //         return;
 //       }
 //       if (!selectedUser && !selectedGroup) {
-//         toast.error("No recipient selected");
+//         //toast.error("No recipient selected");
 //         return;
 //       }
 //       if (isSoundEnabled) playRandomKeyStrokeSound();
@@ -2128,7 +2128,7 @@ export default MessageInput;
 //         if (docInputRef.current) docInputRef.current.value = "";
 //         if (audioInputRef.current) audioInputRef.current.value = "";
 //      } catch (error) {
-//         toast.error("Failed to send message");
+//         //toast.error("Failed to send message");
 //         console.error("Send message error:", error);
 //       }
 //     },

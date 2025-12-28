@@ -65,7 +65,7 @@ const hover = hexToRgba50(base)
       const idx = ALL_COLORS.indexOf(primaryColor);
       const next = ALL_COLORS[(idx + 1) % ALL_COLORS.length];
       get().setPrimaryColor(next);
-    }, 30 * 1000);
+    }, 5 * 60 * 1000);
   };
 
   return {

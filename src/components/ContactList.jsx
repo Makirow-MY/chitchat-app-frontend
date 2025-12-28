@@ -54,7 +54,6 @@ function ContactList() {
           className="bg-[var(--bg-main)]  p-4 rounded-lg cursor-pointer hover:bg-[var(--color-primary-hover)] transition-colors"
           onClick={() => {
             if (socket && contact.roomId) {
-              toast.success(contact.roomId)
               // SOLUTION: When selecting a contact to start/open chat, ensure join the private room. This fixes the deviation where chat container doesn't open/load for new chats and enables real-time first-message receipt.
               socket.emit("join_private_rooms", [contact.roomId]);
             }

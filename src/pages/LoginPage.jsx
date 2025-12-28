@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import BorderAnimatedContainer from "../components/BorderAnimatedContainer";
 import { MessageCircleIcon, MailIcon, LoaderIcon, LockIcon, MessageCircle } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import randomColor from "randomcolor"; 
 import { motion } from "framer-motion";
 // Helper function to generate UI avatar URL based on fullName

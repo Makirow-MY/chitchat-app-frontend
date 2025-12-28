@@ -138,9 +138,6 @@ function ChatPage() {
                   <MdUpdate size={20} />
                 </button>
 
-                <button title="calls" className={`p-3 rounded-xl ${sidebarContent === "calls" ? "bg-[var(--color-primary-hover)] text-white" : "hover:bg-[var(--color-primary)] text-[var(--text-primary)]"}`} onClick={() => setSidebarContent("calls")}>
-                  <FiPhone size={20} />
-                </button>
               </div>
 
               {/* BOTTOM */}

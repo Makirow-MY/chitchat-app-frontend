@@ -32,7 +32,7 @@ get().setupConnectionRecovery(); // ← ADD THIS LINE
     } catch (error) {
       console.error("Error in checkAuth:", error);
       set({ authUser: null });
-     // get().logout()
+    // get().logout()
     } finally {
       set({ isCheckingAuth: false });
     }

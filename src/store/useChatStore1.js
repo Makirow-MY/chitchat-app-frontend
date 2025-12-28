@@ -1018,7 +1018,7 @@ console.log("datatata", data)
           // SOLVES: MISSED CALL → MESSAGE + NOTIFY
           socket.on('callMissed', () => {
             set({ isRinging: false, incomingCall: null, callMessage: "Missed call" });
-            //toast.error("Call missed");
+            toast.error("Call missed");
           });
 
           // SOLVES: USER KICKED
@@ -1086,7 +1086,7 @@ console.log("datatata", data)
 
     } catch (err) {
       console.error(err);
-      //toast.error("Failed to load initial data");
+      toast.error("Failed to load initial data");
     } finally {
       toast.remove()
       setTimeout(() => {
@@ -1709,7 +1709,7 @@ console.log("datatata", data)
 
     return res.data;
     } catch (error) {
-      //toast.error(error.response?.data?.message || "Failed to pin message");
+      toast.error(error.response?.data?.message || "Failed to pin message");
       throw error;
     }
   },
@@ -2079,7 +2079,7 @@ console.log("datatata", data)
       }
  toast.success("Chat reported successfully");
     } catch (error) {
-      //toast.error("Failed to report chat");
+      toast.error("Failed to report chat");
       console.error("Report chat error:", error);
     }
   },
@@ -2104,7 +2104,7 @@ console.log("datatata", data)
        setSelectedGroup({...selectedGroup, roomId: null})
 
     } catch (error) {
-      //toast.error("Failed to report chat");
+      toast.error("Failed to report chat");
       console.error("Report chat error:", error);
     }
   },
@@ -2384,7 +2384,7 @@ console.log("datatata", data)
       }
     } catch (error) {
       console.error("Error marking messages as read:", error);
-      //toast.error(error.response?.data?.message || "Error marking messages as read");
+      toast.error(error.response?.data?.message || "Error marking messages as read");
     }
   },
   createGroup: async ({ name, members, profilePic }) => {
@@ -2688,7 +2688,7 @@ console.log("datatata", data)
 
       //  const roomId = (await axiosInstance.get(`/friends/received-requests`)).data.find(req => req.from._id === userId)?.privateRoomId;
         if (roomId) {
-        // //toast.error(`${userId}, ${roomId},`)
+        // toast.error(`${userId}, ${roomId},`)
           socket.emit("user_unblocked", { userId, unblockedBy: useAuthStore.getState().authUser._id, roomId });
           socket.emit("join_private_rooms", [roomId]);
         }
@@ -2737,7 +2737,7 @@ console.log("datatata", data)
       get().getUserGroups()
           } catch (error) {
       toast.dismiss()
-      //toast.error("Failed To decline")
+      toast.error("Failed To decline")
       console.log(error.response?.data?.message || "Error declining group join request");
     } finally{
 toast.dismiss()
@@ -2759,7 +2759,7 @@ toast.dismiss()
       }
           } catch (error) {
       toast.dismiss()
-      //toast.error("Failed To decline")
+      toast.error("Failed To decline")
       console.log(error.response?.data?.message || "Error declining group join request");
     } finally{
 toast.dismiss()
@@ -2953,7 +2953,7 @@ toast.dismiss()
        // navigate('/call');
        return res.data;
       } catch (err) {
-        //toast.error("Failed to start call");
+        toast.error("Failed to start call");
       }
     },
    acceptCall: async (callId, roomId) => {
@@ -2963,7 +2963,7 @@ toast.dismiss()
       set({ isInCall: true, isRinging: false, incomingCall: null, callMessage: "You joined the call" });
       navigate('/call');
     } catch (err) {
-      //toast.error("Failed to accept");
+      toast.error("Failed to accept");
     }
   },
 
@@ -2998,7 +2998,7 @@ const chatId = isGroup ? selectedGroup._id : selectedUser._id
     //   });
 
     } catch (err) {
-      //toast.error("Failed to reject");
+      toast.error("Failed to reject");
       console.error(err)
       return;
     }
@@ -3046,7 +3046,7 @@ socket.emit("initiateCall", {
         });
       }
   } catch (err) {
-      //toast.error("Failed to reject");
+      toast.error("Failed to reject");
       console.error(err)
       return;
     }
@@ -3075,480 +3075,3 @@ socket.emit("initiateCall", {
     }
   },
 }));
-// import { create } from "zustand";
-// import toast from "react-hot-toast";
-// import { supabase } from "../lib/supabaseClient";
-// import { useAuthStore } from "./useAuthStore1";
-
-// export const useChatStore = create((set, get) => ({
-//   sidebarContent: "chats",
-//   recentEmojis: JSON.parse(localStorage.getItem("recentEmojis")) || ["Like", "Heart", "Laugh", "Sad", "Angry", "Surprised"],
-//   setSidebarContent: (content) => set({ sidebarContent: content }),
-//   searchQuery: "",
-//   setSearchQuery: (query) => set({ searchQuery: query }),
-//   selectedMessageId: null,
-//   setSelectedMessageId: (id) => set({ selectedMessageId: id }),
-//   multiSelectedMessages: [],
-//   setMultiSelectedMessages: (msgs) => set({ multiSelectedMessages: msgs }),
-//   option: "",
-//   setOption: (content) => set({ option: content }),
-
-//   queuedActions: JSON.parse(localStorage.getItem("queuedActions")) || [],
-//   selectedUser: null,
-//   selectedGroup: null,
-//   isSoundEnabled: JSON.parse(localStorage.getItem("isSoundEnabled")) || true,
-//   toggleSound: () => {
-//     const newVal = !get().isSoundEnabled;
-//     localStorage.setItem("isSoundEnabled", newVal);
-//     set({ isSoundEnabled: newVal });
-//   },
-
-//   chats: [],
-//   groupChats: [],
-//   archivedChats: [],
-//   filteredChats: [],
-//   processedMessageIds: new Set(),
-//   clearProcessedMessageIds: () => set({ processedMessageIds: new Set() }),
-
-//   messages: [],
-//   savedMessages: [],
-//   allContacts: [],
-//   allGroups: [],
-//   searchResults: [],
-//   setSearchResults: (results) => set({ searchResults: results }),
-//   targetHighlightMsgId: null,
-//   setTargetHighlightMsgId: (id) => set({ targetHighlightMsgId: id }),
-
-//   receivedRequests: [],
-//   sentRequests: [],
-//   blockedUsers: [],
-//   setBlockedUsers: (users) => set({ blockedUsers: users }),
-
-//   isInitialDataLoading: true,
-//   hasInitialDataLoaded: false,
-//   usersForRequest: [],
-//   groupJoinRequests: [],
-//   notifications: [],
-
-//   typingUsers: [],
-//   attached: false,
-//   setAttached: (v) => set({ attached: v }),
-//   showEmojiPicker: false,
-//   setShowEmojiPicker: (v) => set({ showEmojiPicker: v }),
-//   showPopup: false,
-//   setShowPopup: (v) => set({ showPopup: v }),
-
-//   isUsersLoading: false,
-//   isMessagesLoading: false,
-
-//   replyTo: null,
-//   setReplyTo: (msg) => set({ replyTo: msg }),
-//   editingMessage: null,
-//   setEditingMessage: (msg) => set({ editingMessage: msg }),
-
-//   // Call state
-//   activeCall: null,
-//   incomingCall: null,
-//   callStates: {},
-//   isRinging: false,
-//   isInCall: false,
-//   localStream: null,
-//   remoteStreams: {},
-//   isMuted: false,
-//   isVideoOn: true,
-//   callMessage: "",
-//   setLocalStream: (stream) => set({ localStream: stream }),
-//   addRemoteStream: (userId, stream) => set((s) => ({ remoteStreams: { ...s.remoteStreams, [userId]: stream } })),
-//   removeRemoteStream: (userId) => set((s) => {
-//     const newStreams = { ...s.remoteStreams };
-//     delete newStreams[userId];
-//     return { remoteStreams: newStreams };
-//   }),
-
-//   // ————————————————————————
-//   // 1. INITIALIZE REALTIME LISTENERS (runs once on login)
-//   // ————————————————————————
-//   initializeRealtimeListeners: () => {
-//     const { authUser } = useAuthStore.getState();
-//     if (!authUser) return;
-
-//     // Global presence channel (online users)
-//     const presenceChannel = supabase.channel("global-presence");
-//     presenceChannel.subscribe();
-
-//     // Message changes
-//     supabase
-//       .channel("public-messages")
-//       .on(
-//         "postgres_changes",
-//         { event: "*", schema: "public", table: "Message" },
-//         (payload) => {
-//           const msg = payload.new || payload.old;
-//           if (!msg) return;
-
-//           if (payload.eventType === "INSERT") get().handleNewMessage(msg);
-//           if (payload.eventType === "UPDATE") get().handleMessageUpdate(payload);
-//           if (payload.eventType === "DELETE") get().handleMessageDelete(payload.old);
-//         }
-//       )
-//       .subscribe();
-
-//     // Typing broadcast
-//     supabase
-//       .channel("typing-channel")
-//       .on("broadcast", { event: "typing" }, ({ payload }) => {
-//         const { roomId, userId, userName } = payload;
-//         const currentRoom = get().selectedUser?.roomId || get().selectedGroup?._id;
-//         if (roomId === currentRoom && userId !== authUser.id) {
-//           set((s) => ({
-//             typingUsers: [...s.typingUsers.filter((t) => t.userId !== userId), { userId, userName }].slice(0, 3),
-//           }));
-//           setTimeout(() => set((s) => ({ typingUsers: s.typingUsers.filter((t) => t.userId !== userId) })), 3000);
-//         }
-//       })
-//       .subscribe();
-//   },
-
-//   // ————————————————————————
-//   // 2. JOIN ROOMS (private + group)
-//   // ————————————————————————
-//   joinAllRooms: async () => {
-//     const { authUser } = useAuthStore.getState();
-//     if (!authUser) return;
-
-//     const { data: user } = await supabase
-//       .from("User")
-//       .select("privateRooms, groupRooms")
-//       .eq("id", authUser.id)
-//       .single();
-
-//     const rooms = [...(user.privateRooms || []), ...(user.groupRooms || [])];
-//     rooms.forEach((roomId) => supabase.channel(roomId).subscribe());
-//   },
-
-//   // ————————————————————————
-//   // 3. SEND TYPING
-//   // ————————————————————————
-//   sendTyping: (roomId, userName) => {
-//     const { authUser } = useAuthStore.getState();
-//     supabase.channel("typing-channel").send({
-//       type: "broadcast",
-//       event: "typing",
-//       payload: { roomId, userId: authUser.id, userName },
-//     });
-//   },
-
-//   // ————————————————————————
-//   // 4. HANDLE NEW MESSAGE (real-time)
-//   // ————————————————————————
-//   handleNewMessage: async (message) => {
-//     const { authUser } = useAuthStore.getState();
-//     const state = get();
-//     const { messages, chats, groupChats, selectedUser, selectedGroup, isSoundEnabled } = state;
-
-//     const isGroup = !!message.groupId;
-//     const isMyMessage = message.senderId === authUser.id;
-//     const chatId = isGroup ? message.groupId : (isMyMessage ? message.receiverId : message.senderId);
-//     const roomId = message.roomId;
-
-//     // Visibility check
-//     const isVisible =
-//       !message.visibleTo?.length || message.visibleTo.some((id) => id === authUser.id);
-//     if (!isVisible) return;
-
-//     // Avoid duplicates
-//     if (messages.some((m) => m.id === message.id)) return;
-
-//     // Unarchive if needed
-//     let isArchived = state.archivedChats.some((c) => c._id === chatId);
-//     if (isArchived) {
-//       await supabase.from("User").update({ archivedChats: [] }).eq("id", authUser.id);
-//       isArchived = false;
-//     }
-
-//     // Update chat lists
-//     get().refreshChatLists();
-
-//     const isSelected =
-//       (isGroup && selectedGroup?._id === chatId) ||
-//       (!isGroup && selectedUser?._id === chatId);
-
-//     if (isSelected) {
-//       set({ messages: [...messages, message] });
-//       if (!isMyMessage) get().markMessageAsRead([message.id], isGroup ? chatId : null, roomId);
-//     }
-
-//     if (!isMyMessage && isSoundEnabled) {
-//       const sound = new Audio("/sounds/notification.mp3");
-//       sound.play().catch(() => {});
-//     }
-//   },
-
-//   // ————————————————————————
-//   // 5. HANDLE MESSAGE UPDATE (edit, react, read, etc.)
-//   // ————————————————————————
-//   handleMessageUpdate: (payload) => {
-//     const msg = payload.new;
-//     set((s) => ({
-//       messages: s.messages.map((m) => (m.id === msg.id ? { ...m, ...msg } : m)),
-//     }));
-//     get().refreshChatLists();
-//   },
-
-//   handleMessageDelete: (oldMsg) => {
-//     set((s) => ({
-//       messages: s.messages.filter((m) => m.id !== oldMsg.id),
-//     }));
-//     get().refreshChatLists();
-//   },
-
-//   // ————————————————————————
-//   // 6. REFRESH CHAT LISTS (runs after every real-time change)
-//   // ————————————————————————
-//   refreshChatLists: async () => {
-//     await Promise.all([
-//       get().getMyChatPartners(),
-//       get().getGroupChats(),
-//       get().getArchivedChats(),
-//     ]);
-//   },
-
-//   // ————————————————————————
-//   // 7. INITIAL DATA LOAD
-//   // ————————————————————————
-//   initInitialData: async () => {
-//     if (get().hasInitialDataLoaded) {
-//       set({ isInitialDataLoading: false });
-//       return;
-//     }
-//     set({ isInitialDataLoading: true });
-//     try {
-//       await Promise.all([
-//         get().getMyChatPartners(),
-//         get().getGroupChats(),
-//         get().getUserGroups(),
-//         get().getAllContacts(),
-//         get().getArchivedChats(),
-//         get().getReceivedRequests(),
-//         get().getSentRequests(),
-//         get().getUsersForRequest(),
-//         get().getNotifications(),
-//       ]);
-//       toast.success(`Welcome back ${useAuthStore.getState().authUser.fullName}`);
-//     } catch (err) {
-//       //toast.error("Failed to load data");
-//     } finally {
-//       set({ isInitialDataLoading: false, hasInitialDataLoaded: true });
-//     }
-//   },
-
-//   // ————————————————————————
-//   // 8. SELECT USER / GROUP
-//   // ————————————————————————
-//   setSelectedUser: async (user) => {
-//     if (!user?.roomId) return;
-//     supabase.channel(user.roomId).subscribe();
-//     localStorage.setItem("selectedUser", JSON.stringify(user));
-//     localStorage.removeItem("selectedGroup");
-//     set({ selectedUser: user, selectedGroup: null, messages: [] });
-//     await get().getMessagesByUserId(user._id);
-//   },
-//   setSelectedGroup: async (group) => {
-//     supabase.channel(group._id).subscribe();
-//     localStorage.setItem("selectedGroup", JSON.stringify(group));
-//     localStorage.removeItem("selectedUser");
-//     set({ selectedUser: null, selectedGroup: group, messages: [] });
-//     await get().getMessagesByGroupId(group._id);
-//   },
-
-//   // ————————————————————————
-//   // 9. SEND MESSAGE
-//   // ————————————————————————
-//   sendMessage: async ({ text, attachments = [], replyTo, isForwarded }) => {
-//     const { authUser } = useAuthStore.getState();
-//     const { selectedUser, selectedGroup } = get();
-//     const isGroup = !!selectedGroup;
-//     const roomId = isGroup ? selectedGroup._id : selectedUser.roomId;
-
-//     const tempId = `temp-${Date.now()}`;
-//     const tempMsg = {
-//       id: tempId,
-//       text,
-//       senderId: authUser.id,
-//       roomId,
-//       attachments,
-//       createdAt: new Date().toISOString(),
-//       readBy: [{ userId: authUser.id, readAt: new Date() }],
-//       pendingFor: isGroup
-//         ? selectedGroup.members.filter((m) => m._id !== authUser.id).map((m) => m._id)
-//         : [selectedUser._id],
-//       replyTo,
-//     };
-
-//     set((s) => ({ messages: [...s.messages, tempMsg] }));
-
-//     try {
-//       const { data, error } = await supabase
-//         .from("Message")
-//         .insert({
-//           text,
-//           attachments,
-//           senderId: authUser.id,
-//           receiverId: isGroup ? null : selectedUser._id,
-//           groupId: isGroup ? selectedGroup._id : null,
-//           roomId,
-//           replyTo: replyTo?.id || null,
-//           isForwarded,
-//         })
-//         .select()
-//         .single();
-
-//       if (error) throw error;
-
-//       set((s) => ({
-//         messages: s.messages.map((m) => (m.id === tempId ? data : m)),
-//       }));
-//       get().refreshChatLists();
-//     } catch (err) {
-//       set((s) => ({ messages: s.messages.filter((m) => m.id !== tempId) }));
-//       //toast.error("Failed to send message");
-//     }
-//   },
-
-//   // ————————————————————————
-//   // 10. ALL FETCH FUNCTIONS (use Supabase directly)
-//   // ————————————————————————
-//   getMyChatPartners: async () => {
-//     const { data } = await supabase.from("User").select("privateRooms, friends").single();
-//     const chats = await Promise.all(
-//       (data.privateRooms || []).map(async (roomId) => {
-//         const { data: msgs } = await supabase
-//           .from("Message")
-//           .select("*, senderId:User!senderId(fullName, profilePic)")
-//           .eq("roomId", roomId)
-//           .order("createdAt", { ascending: false })
-//           .limit(1);
-//         const msg = msgs[0];
-//         const partnerId = roomId.split("_").find((id) => id !== useAuthStore.getState().authUser.id);
-//         const { data: partner } = await supabase.from("User").select("*").eq("id", partnerId).single();
-//         return {
-//           _id: partnerId,
-//           roomId,
-//           fullName: partner.fullName,
-//           profilePic: partner.profilePic,
-//           recentMessage: msg ? { text: msg.text, createdAt: msg.createdAt } : null,
-//           unreadCount: 0,
-//         };
-//       })
-//     );
-//     set({ chats });
-//   },
-
-//   getGroupChats: async () => {
-//     const { data: user } = await supabase.from("User").select("groupRooms").single();
-//     const groups = await Promise.all(
-//       (user.groupRooms || []).map(async (groupId) => {
-//         const { data: group } = await supabase.from("Group").select("*").eq("id", groupId).single();
-//         const { data: msgs } = await supabase
-//           .from("Message")
-//           .select("*")
-//           .eq("groupId", groupId)
-//           .order("createdAt", { ascending: false })
-//           .limit(1);
-//         return {
-//           ...group,
-//           roomId: groupId,
-//           recentMessage: msgs[0] ? { text: msgs[0].text, createdAt: msgs[0].createdAt } : null,
-//         };
-//       })
-//     );
-//     set({ groupChats: groups });
-//   },
-
-//   getMessagesByUserId: async (userId) => {
-//     set({ isMessagesLoading: true });
-//     const roomId = `private_${[useAuthStore.getState().authUser.id, userId].sort().join("_")}`;
-//     const { data } = await supabase
-//       .from("Message")
-//       .select("*, senderId:User!senderId(*), replyTo:Message!replyTo(*)")
-//       .eq("roomId", roomId)
-//       .order("createdAt", { ascending: true });
-//     set({ messages: data || [], isMessagesLoading: false });
-//   },
-
-//   getMessagesByGroupId: async (groupId) => {
-//     set({ isMessagesLoading: true });
-//     const { data } = await supabase
-//       .from("Message")
-//       .select("*, senderId:User!senderId(*), replyTo:Message!replyTo(*)")
-//       .eq("groupId", groupId)
-//       .order("createdAt", { ascending: true });
-//     set({ messages: data || [], isMessagesLoading: false });
-//   },
-
-//   markMessageAsRead: async (msgIds, groupId, roomId) => {
-//     const { authUser } = useAuthStore.getState();
-//     await supabase
-//       .from("Message")
-//       .update({
-//         readBy: supabase.raw(`array_append("readBy", '${JSON.stringify({ userId: authUser.id, readAt: new Date() })}')`),
-//       })
-//       .in("id", msgIds);
-//     get().refreshChatLists();
-//   },
-
-//   // ————————————————————————
-//   // 11. ALL OTHER ACTIONS (edit, react, delete, friend requests, etc.)
-//   // ————————————————————————
-//   editMessage: async (msgId, text) => {
-//     await supabase.from("Message").update({ text, isEdited: true }).eq("id", msgId);
-//   },
-
-//   reactToMessage: async (msgId, emoji) => {
-//     const { authUser } = useAuthStore.getState();
-//     const { data: msg } = await supabase.from("Message").select("reactions").eq("id", msgId).single();
-//     const existing = (msg.reactions || []).find((r) => r.userId === authUser.id);
-//     let newReactions = existing
-//       ? msg.reactions.map((r) => (r.userId === authUser.id ? { ...r, emoji } : r))
-//       : [...(msg.reactions || []), { userId: authUser.id, emoji }];
-//     await supabase.from("Message").update({ reactions: newReactions }).eq("id", msgId);
-//   },
-
-//   deleteMessage: async (msgIds, forEveryone) => {
-//     if (forEveryone) {
-//       await supabase.from("Message").delete().in("id", msgIds);
-//     } else {
-//       await supabase.from("Message").update({ deletedForEveryone: false, deletedBy: supabase.raw(`array_append("deletedBy", '${useAuthStore.getState().authUser.id}')`) }).in("id", msgIds);
-//     }
-//   },
-
-//   // Friend requests, groups, calls, etc. — all use simple supabase.from().insert()/update()
-//   // Example:
-//   sendFriendRequest: async (userId) => {
-//     await supabase.from("FriendRequest").insert({ from: useAuthStore.getState().authUser.id, to: userId, status: "pending" });
-//     toast.success("Friend request sent");
-//     get().getUsersForRequest();
-//   },
-
-//   // You already have the rest of the functions — just replace axios with supabase calls
-//   // I’ve kept the structure identical so you can copy-paste your existing logic
-
-//   // Call example
-//   initiateCall: async ({ type, targetId, isGroup }) => {
-//     const roomId = isGroup ? targetId : `private_${[useAuthStore.getState().authUser.id, targetId].sort().join("_")}`;
-//     const { data } = await supabase.from("Call").insert({
-//       type,
-//       participants: isGroup ? [] : [targetId, useAuthStore.getState().authUser.id],
-//       groupId: isGroup ? targetId : null,
-//       caller: useAuthStore.getState().authUser.id,
-//       status: "ringing",
-//       roomId,
-//     }).select().single();
-//     supabase.channel("typing-channel").send({
-//       type: "broadcast",
-//       event: "initiateCall",
-//       payload: data,
-//     });
-//     set({ activeCall: data, isInCall: true, isRinging: false });
-//   },
-// }));
