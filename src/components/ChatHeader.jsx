@@ -98,7 +98,7 @@ const formatFullDate = (date) => {
     isOnline = onlineUsers?.includes(selectedUser._id);
   } else if (selectedGroup) {
     const memberIds = selectedGroup.members?.map((m) => m._id) || [];
-    const onlineIds = memberIds.filter((id) => onlineUsers.includes(id));
+    const onlineIds = memberIds?.filter((id) => onlineUsers?.includes(id));
     onlineMembersData = selectedGroup.members?.filter((m) => onlineIds.includes(m._id)) || [];
     isOnline = onlineMembersData.length > 0;
   }
@@ -192,9 +192,12 @@ const formatFullDate = (date) => {
             {/* Back button (mobile only) */}
             <button
               onClick={() =>
-                selectedUser
+               {
+                 selectedUser
                   ? setSelectedUser({ ...selectedUser, roomId: null })
                   : setSelectedGroup({ ...selectedGroup, roomId: null })
+
+              }
               }
               className="p-2.5 hover:bg-[var(--color-primary-hover)] rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] block md:hidden"
             >
@@ -203,7 +206,7 @@ const formatFullDate = (date) => {
 
             {/* Avatar & Details */}
             <div
-              onClick={() => isGroupMember && setShowMedia(!showmedia)}
+              onClick={() => setShowMedia(!showmedia)}
               className={`flex items-center space-x-3 ${
                 selectedGroup && isGroupMember ? "cursor-pointer" : ""
               }`}

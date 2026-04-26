@@ -932,9 +932,9 @@ const filteredgroupRequest =   groupJoinRequests
                 )}
               </div>
             ) : (
-              <h3 style={{color: profile?.color}} className="text-md font-medium mt-2 capitalize">{truncatePar(profileName, 25)}</h3>
+              <h3 style={{color: profile?.color}} className="text-md font-semibold mt-2 capitalize text-center">{truncatePar(profileName, 25)}</h3>
             )}
-            <p className="text-[var(--text-primary)] text-sm mt-1">Group * {about}</p>
+            <p className="text-[var(--text-primary)] text-sm mt-1 text-center">Group * {about}</p>
           </div>
 
           </div>
