@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { useChatStore } from "./useChatStore";
 
-const BASE_URL = import.meta.env.MODE === "development" ? "https://mgy-chitchat-backend-keep.vercel.app" : "/";
+const BASE_URL = "https://mgy-chitchat-backend.vercel.app";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -25,6 +25,7 @@ theme: window.localStorage.getItem("theme") || "dark"  ,
       set({ isCheckingAuth: true });
       const res = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
+      window.localStorage.setItem("chitchatUser", JSON.stringify(res.data))
      // Inside checkAuth, login, signup → after set({ authUser })
 get().connectSocket();
 get().setupConnectionRecovery(); // ← ADD THIS LINE
@@ -32,6 +33,7 @@ get().setupConnectionRecovery(); // ← ADD THIS LINE
     } catch (error) {
       console.error("Error in checkAuth:", error);
       set({ authUser: null });
+      window.localStorage.setItem("chitchatUser", JSON.stringify(null))
     // get().logout()
     } finally {
       set({ isCheckingAuth: false });
@@ -198,7 +200,7 @@ setupConnectionRecovery: () => {
 
 const user =  JSON.parse(window.localStorage.getItem("chitchatUser") || [])
 console.log()
-  const newSocket = io("https://mgy-chitchat-backend-keep.vercel.app", {
+  const newSocket = io(BASE_URL, {
     withCredentials: true,
     query: { userId:  authUser._id || user._id },
     transports: ["websocket", "polling"],

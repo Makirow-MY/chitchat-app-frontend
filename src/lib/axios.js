@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.MODE === "development" ? "https://mgy-chitchat-backend-keep.vercel.app/api" : "/api",
+  baseURL:"https://mgy-chitchat-backend.vercel.app/api",
   withCredentials: true,
 });

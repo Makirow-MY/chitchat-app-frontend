@@ -54,7 +54,7 @@ useEffect(() => {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-
+console.log({user})
   useEffect(() => {
     if (authUser || user) {
       initInitialData();               // ← FIRE ONCE after login/signup
