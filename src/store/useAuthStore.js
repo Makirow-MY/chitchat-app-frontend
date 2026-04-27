@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { useChatStore } from "./useChatStore";
 
-const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
+const BASE_URL = import.meta.env.MODE === "development" ? "https://mgy-chitchat-backend-keep.vercel.app" : "/";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -44,7 +44,7 @@ get().setupConnectionRecovery(); // ← ADD THIS LINE
       const res = await axiosInstance.post("/auth/signup", data);
       set({ authUser: res.data });
       toast.success("Account created successfully!");
-// Inside checkAuth, login, signup → after set({ authUser })
+ window.localStorage.setItem("chitchatUser", JSON.stringify(res.data))
 get().connectSocket();
 get().setupConnectionRecovery(); // ← ADD THIS LINE
     } catch (error) {
@@ -62,6 +62,8 @@ get().setupConnectionRecovery(); // ← ADD THIS LINE
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
       toast.success("Logged in successfully");
+      window.localStorage.setItem("chitchatUser", JSON.stringify(res.data))
+     
       // Inside checkAuth, login, signup → after set({ authUser })
 get().connectSocket();
 get().setupConnectionRecovery(); // ← ADD THIS LINE
@@ -108,7 +110,7 @@ setupConnectionRecovery: () => {
   const handleOnline = () => {
     const { socket } = get();
     if (!socket?.connected) {
-      console.log("[SOCKET] Network back → forcing reconnect");
+      
       socket?.connect();
     }
   };
@@ -182,23 +184,23 @@ setupConnectionRecovery: () => {
   // },
 
   // === REPLACE THE ENTIRE connectSocket FUNCTION WITH THIS ===
-connectSocket: () => {
+
+  connectSocket: () => {
   const { authUser, socket } = get();
   if (!authUser || socket?.connected) return;
 
   // Clean up old socket
   if (socket) {
+    console.log({socket})
     socket.removeAllListeners();
     socket.disconnect();
   }
 
-  const BASE_URL = import.meta.env.MODE === "development" 
-    ? "http://localhost:5000" 
-    : "/";
-
-  const newSocket = io(BASE_URL, {
+const user =  JSON.parse(window.localStorage.getItem("chitchatUser") || [])
+console.log()
+  const newSocket = io("https://mgy-chitchat-backend-keep.vercel.app", {
     withCredentials: true,
-    query: { userId: authUser._id },
+    query: { userId:  authUser._id || user._id },
     transports: ["websocket", "polling"],
     reconnection: true,
     reconnectionAttempts: Infinity,
@@ -213,6 +215,10 @@ connectSocket: () => {
     pingTimeout: 5000,
   });
 
+  if(newSocket){
+    window.localStorage.setItem("chitchatUserSocket", JSON.strin)
+    const user = JSON.parse(window.localStorage.getItem("chitchatUser"))
+  }
   // === CONNECTION SUCCESS ===
   newSocket.on("connect", () => {
     console.log(`[SOCKET] Connected: ${authUser._id}`);

@@ -13,6 +13,7 @@ import { IoDocument, IoImage, IoImageSharp, IoMicOff, IoMicSharp, IoVideocam } f
 import { FiMic, FiX, FiCamera, FiVideo, FiCameraOff, FiRepeat } from "react-icons/fi";
 import { FaPoll, FaPollH } from "react-icons/fa";
 import { useThemeStore } from "../store/useThemeStore";
+
 function MessageInput() {
   const { playRandomKeyStrokeSound } = useKeyboardSound();
   const [text, setText] = useState("");
@@ -680,6 +681,28 @@ console.log(replyTo)
       }
     }
   };
+  // Frontend: Upload directly to Cloudinary
+const uploadToCloudinary = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'chat_attachments_preset');
+  formData.append('cloud_name', 'dyf21ulbr');
+  
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/dyf21ulbr/auto/upload`,
+    {
+      method: 'POST',
+      body: formData,
+    }
+  );
+  
+  const data = await response.json();
+  return data.secure_url;
+};
+
+// Then in your sendMessage function
+
+
 const handleSendMessage = useCallback(
     async (e) => {
       e.preventDefault();
@@ -693,28 +716,38 @@ const handleSendMessage = useCallback(
       }
       if (isSoundEnabled) playRandomKeyStrokeSound();
       try {
-        const preparedAttachments = await Promise.all(
-          attachments.map(async (attachment) => {
-            let attachData = { ...attachment };
-            console.log(attachment)
-            if (attachment.data.startsWith("blob:")) {
-              const response = await fetch(attachment.data);
-              const blob = await response.blob();
-              const reader = new FileReader();
-              await new Promise((res) => {
-                reader.onloadend = res;
-                reader.readAsDataURL(blob);
-              });
-              attachData = { ...attachment, data: reader.result };
-            }
-            return attachData;
-          })
-        );
+
+        const uploadPromises = attachments.map(async (attachment) => {
+  if (attachment.file) {
+    const url = await uploadToCloudinary(attachment.file);
+    return { ...attachment, data: url };
+  }
+  return attachment;
+});
+
+const uploadedAttachments = await Promise.all(uploadPromises);
+        // const preparedAttachments = await Promise.all(
+        //   attachments.map(async (attachment) => {
+        //     let attachData = { ...attachment };
+        //     console.log(attachment)
+        //     if (attachment.data.startsWith("blob:")) {
+        //       const response = await fetch(attachment.data);
+        //       const blob = await response.blob();
+        //       const reader = new FileReader();
+        //       await new Promise((res) => {
+        //         reader.onloadend = res;
+        //         reader.readAsDataURL(blob);
+        //       });
+        //       attachData = { ...attachment, data: reader.result };
+        //     }
+        //     return attachData;
+        //   })
+        // );
         const tempText = text.trim();
-        const tempAttachments = preparedAttachments;
+        const tempAttachments = uploadedAttachments;
         const tempReplyTo = replyTo;
     
-     // console.log(tempAttachments,"tempAttachments")
+  console.log(tempAttachments,"tempAttachments")
         setText("");
         setAttachments([]);
         setVideoSrc(null);
@@ -745,7 +778,7 @@ isGroup ? undefined : chatId
           const receiverId = selectedGroup ? undefined : selectedUser?._id;
          sendMessage({
             text: tempText,
-            attachments: tempAttachments,
+            attachments: uploadedAttachments,
             groupId: selectedGroup?._id,
             receiverId: selectedUser?._id,
             replyTo: tempReplyTo,

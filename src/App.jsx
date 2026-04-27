@@ -14,6 +14,7 @@ import { useThemeStore } from "./store/useThemeStore";
 
 function App() {
   const { checkAuth, isCheckingAuth, authUser } = useAuthStore();
+  const user =  JSON.parse(window.localStorage.getItem("chitchatUser"));
   const {
     getMyChatPartners,
     chats,
@@ -49,12 +50,13 @@ const { mode, primaryColor, init } = useThemeStore();
 useEffect(() => {
   init();
 }, [init]);
+
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
   useEffect(() => {
-    if (authUser) {
+    if (authUser || user) {
       initInitialData();               // ← FIRE ONCE after login/signup
     }
   }, [authUser, initInitialData]);
@@ -63,7 +65,7 @@ useEffect(() => {
   }, 5000);
 
   //if (isCheckingAuth && active) return <PageLoader />;
-if (isCheckingAuth || (isInitialDataLoading && authUser )) {
+if (isCheckingAuth || (isInitialDataLoading && (authUser || user) )) {
     return <PageLoader />;
   }
  

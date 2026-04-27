@@ -1059,9 +1059,10 @@ console.log("datatata", data)
       toast.loading(`Room ${roomId} has been terminated`);
     });
   },
+
   initInitialData: async () => {
       const { authUser } = useAuthStore.getState();
-
+      const user =  JSON.parse(window.localStorage.getItem("chitchatUser"))
     if (get().hasInitialDataLoaded) {
       setTimeout(() => {
         set({ isInitialDataLoading: false });
@@ -1079,8 +1080,8 @@ console.log("datatata", data)
         get().getUserGroups(),
         get().getAllContacts(),
         get().getArchivedChats(),
-    //    get().fetchSavedMessages?.(),        // if you have it
-      //  get().getGroupJoinRequests?.(),     // if global
+     //  get().fetchSavedMessages(),        // if you have it
+     //  get().getGroupJoinRequests?.(),     // if global
         // add ANY other global fetch you have here
       ]);
 
@@ -1090,9 +1091,8 @@ console.log("datatata", data)
     } finally {
       toast.remove()
       setTimeout(() => {
-            toast.success(`Welcome back ${authUser.fullName} `);
-
-         set({
+            toast.success(`Welcome back ${authUser.fullName || user._id} `);
+    set({
         isInitialDataLoading: false,
         hasInitialDataLoaded: true
       });
@@ -1284,98 +1284,277 @@ console.log("datatata", data)
     // Professional: Mark originals as read after forwarding
   //  markMessageAsRead(msgIds, selectedGroup?._id || null);
   },
-    sendMessage: async ({ text, attachments, groupId, receiverId, replyTo, isForwarded = null, roomId, ForwardUser }) => {
-    const { messages, chats, groupChats, archivedChats, selectedUser, selectedGroup } = get();
-    console.log({ggjh:"ertyuio[plkjhghfghjklmntyui",  text, attachments, groupId, receiverId, replyTo, isForwarded, roomId, ForwardUser })
-    const { authUser } = useAuthStore.getState();
-    const socket = useAuthStore.getState().socket;
-    const chatId = groupId || receiverId;
-    const isGroup = !!groupId;
-     roomId = roomId || (isGroup ? groupId : (selectedUser?.roomId || chats.find((c) => c._id === receiverId)?.roomId));
-    if (!chatId || !roomId) return console.log("Invalid chat or room");
-    let isArchived = await get().checkIsChatArchived(chatId, isGroup);
-    if (isArchived) {
-      await axiosInstance.post(`/messages/archive-chat/${chatId}`, { unarchive: true });
-      isArchived = false;
-    }
+//     sendMessage: async ({ text, attachments, groupId, receiverId, replyTo, isForwarded = null, roomId, ForwardUser }) => {
+//     const { messages, chats, groupChats, archivedChats, selectedUser, selectedGroup } = get();
+//     console.log({ggjh:"ertyuio[plkjhghfghjklmntyui",  text, attachments, groupId, receiverId, replyTo, isForwarded, roomId, ForwardUser })
+//     const { authUser } = useAuthStore.getState();
+//     const socket = useAuthStore.getState().socket;
+//     const chatId = groupId || receiverId;
+//     const isGroup = !!groupId;
+//      roomId = roomId || (isGroup ? groupId : (selectedUser?.roomId || chats.find((c) => c._id === receiverId)?.roomId));
+//     if (!chatId || !roomId) return console.log("Invalid chat or room");
+//     let isArchived = await get().checkIsChatArchived(chatId, isGroup);
+//     if (isArchived) {
+//       await axiosInstance.post(`/messages/archive-chat/${chatId}`, { unarchive: true });
+//       isArchived = false;
+//     }
 
-    const tempId = `temp-${Date.now()}-${Math.random()}`;
-    const tempMessage = {
-      _id: tempId,
-      text,
-      senderId: authUser,
-      receiverId: isGroup ? null : receiverId,
-      groupId: isGroup ? groupId : null,
+//     const tempId = `temp-${Date.now()}-${Math.random()}`;
+//     const tempMessage = {
+//       _id: tempId,
+//       text,
+//       senderId: authUser,
+//       receiverId: isGroup ? null : receiverId,
+//       groupId: isGroup ? groupId : null,
+//       roomId,
+//       attachments: attachments.map((att) => ({
+//         attachmentType: att.type,
+//         attachmentUrl: att.data,
+//         attachmentExt: att.ext ? att.ext.toLowerCase() : att.name.split(".").pop().toLowerCase(),
+//         size: att?.size || att?.file?.size,
+//         originalName: att.name.toLowerCase(),
+//         mimeType: att.mimeType,
+//         preview: att.preview || null,
+//         duration: att.duration || 0,
+//       })),
+//       createdAt: new Date(),
+//       readBy: isGroup ? [] : [{ userId: authUser._id, readAt: new Date() }],
+//       pendingFor: isGroup ? groupChats.find(g => g._id === groupId)?.members.map(m => m._id.toString()).filter(id => id !== authUser._id.toString()) || [] : [receiverId],
+//       isEdited: false,
+//       reactions: [],
+//       isPinned: false,      
+//       isForwarded:false,
+//       isStarred: false,
+//       replyTo: replyTo ? !isGroup ? {...replyTo, senderId: replyTo.senderId._id, receiverId: replyTo.receiverId._id, groupId: null } : {...replyTo, senderId: replyTo.senderId._id, receiverId: null, groupId: replyTo.groupId }: null,
+//       visibleTo: [],
+//     };
+//   console.log({groupId, receiverId, replyTo,  selectedUser, authUser, })
+
+//     if ((selectedGroup && groupId === selectedGroup._id) || (selectedUser && receiverId === selectedUser._id)) {
+//       set({ messages: [...messages, tempMessage] });
+//     }
+
+//     let targetListKey = isGroup ? "groupChats" : "chats";
+//     let targetList = isGroup ? groupChats : chats;
+//     let updatedChats = chats.filter((c) => c._id !== chatId);
+//     let updatedGroupChats = groupChats.filter((c) => c._id !== chatId);
+//     let updatedArchivedChats = archivedChats.filter((c) => c._id !== chatId);
+//     let updatedList = [...targetList];
+
+//     const chatIndex = updatedList.findIndex((c) => c._id === chatId);
+//     let chat;
+//     if (chatIndex === -1) {
+//       chat = {
+//         _id: chatId,
+//         roomId,
+//         senderId: authUser._id,
+//         members:isGroup ? selectedGroup.members : [],
+//         name: isGroup ? selectedGroup?.name : undefined,
+//         fullName: isGroup ? undefined : (isForwarded === 'true' && !selectedUser?.fullName) ? ForwardUser.fullName : selectedUser?.fullName,
+//         profilePic: isGroup
+//           ? selectedGroup?.profilePic || "/avatar.png"
+//           : (isForwarded === 'true' && !selectedUser?.profilePic) ? ForwardUser.profilePic : selectedUser?.profilePic || "/avatar.png",
+//         recentMessage: {
+//           text,
+//           attachmentType: attachments[attachments?.length - 1]?.type,
+//           originalName: attachments[attachments?.length - 1]?.name.toLowerCase(),
+//           createdAt: new Date(),
+//           isEdited: false,
+//           reactions: [],
+//           isPinned: false,
+//           isStarred: false,
+//           replyTo,
+//         },
+//         unreadCount: 0,
+//       };
+//       //   console.log(chat, "chat",isGroup,"isGroup",selectedGroup)
+
+//       if (!chat.name && !chat.fullName) return;
+//       updatedList.unshift(chat);
+//     } else {
+//       chat = { ...updatedList[chatIndex], roomId };
+//       chat.recentMessage = {
+//         text,
+//         senderId: authUser._id,
+//         attachmentType: attachments[attachments?.length - 1]?.type,
+//         originalName: attachments[attachments?.length - 1]?.name.toLowerCase(),
+//         createdAt: new Date(),
+//         isEdited: false,
+//         reactions: [],
+//         isPinned: false,
+//         isStarred: false,
+//         replyTo,
+//       };
+//       chat.unreadCount = 0;
+//       updatedList.splice(chatIndex, 1);
+//       updatedList.unshift(chat);
+//     }
+//     set({
+//       chats: updatedChats,
+//       groupChats: updatedGroupChats,
+//       archivedChats: updatedArchivedChats,
+//       [targetListKey]: updatedList,
+//     });
+
+//       const formData = new FormData();
+//       formData.append("text", text.trim());
+//       if (selectedGroup || (isForwarded && groupId)) formData.append("myGroupId", groupId);
+//       if (selectedUser || (isForwarded && receiverId)) formData.append("receiverId", receiverId);
+//       if (replyTo) formData.append("replyTo", replyTo._id);
+//       formData.append("isForwarded", isForwarded);
+//       formData.append("roomId",roomId);
+
+//       attachments.forEach((attachment, index) => {
+//       if (!isForwarded)  formData.append(`files[${index}]`, attachment.file, attachment.name.toLowerCase());
+//         formData.append(`durations[${index}]`, attachment.duration || 0);
+//         formData.append(`types[${index}]`, attachment.type);
+//         formData.append(`durations[${index}]`, attachment.duration || 0);
+//         formData.append(`originalName[${index}]`, attachment.name.toLowerCase());
+//       formData.append(`dataURL[${index}]`, attachment.data);
+
+//         formData.append(`names[${index}]`, attachment.name);
+//         formData.append(`mimeTypes[${index}]`, attachment.mimeType);
+//         formData.append(`preview[${index}]`, attachment.preview || null);
+//         if (attachment.ext) formData.append(`attachmentExt[${index}]`, attachment.ext || "mp3");
+//         if (attachment.size) formData.append(`size[${index}]`, attachment.size);
+//       });
+//  //console.log(formData ,"formData ")
+//     try {
+//       // const res = await axiosInstance.post("/messages/send", {
+//       // text,
+//       // attachments,
+//       // groupId,
+//       // receiverId,
+//       // replyTo,
+//       // isForwarded,
+//       // roomId,
+//       // });
+
+//       const res = await axiosInstance.post("/messages/send", formData, {
+//       headers: {
+//       "Content-Type": "multipart/form-data",
+//       },
+//       });
+
+//       console.log("Message sent response:", res.data);
+//       const newMessage = { ...res.data, roomId };
+//       set((state) => ({
+//       messages: state.messages.map((msg) =>
+//       msg._id === tempId ? { ...newMessage, senderId: authUser, roomId, replyTo:newMessage.replyTo } : msg
+//       ),
+//       [targetListKey]: state[targetListKey].map((c) =>
+//       c._id === chatId
+//       ? {
+//       ...c,
+//       roomId,
+//       recentMessage: {
+//       text: newMessage.text,
+//       attachmentType: newMessage.attachments?.[newMessage.attachments?.length - 1]?.attachmentType,
+//       originalName: newMessage.attachments?.[newMessage.attachments?.length - 1]?.originalName,
+//       createdAt: newMessage.createdAt,
+//       isEdited: newMessage.isEdited,
+//       isForwarded: newMessage.isForwarded,
+//       reactions: newMessage.reactions,
+//       replyTo: newMessage.replyTo,
+//       },
+//       }
+//       : c
+//       ),
+//       }));
+//       if (socket) {
+//       socket.emit("sendMessage", {
+//       message: newMessage,
+//       sender: authUser,
+//       chatId,
+//       isGroup,
+//       roomId,
+//       });
+//       } else {
+//       console.error("Socket not available for sendMessage");
+//       }
+//     } catch (error) {
+//       set((state) => ({
+//         messages: state.messages.filter((msg) => msg._id !== tempId),
+//         chats: updatedChats,
+//         groupChats: updatedGroupChats,
+//         archivedChats: updatedArchivedChats,
+//       }));
+//       console.log(error.response?.data?.message || "Error sending message");
+//       throw error;
+//     }
+//   },
+  
+sendMessage: async ({ text, attachments, groupId, receiverId, replyTo, isForwarded = null, roomId, ForwardUser }) => {
+  const { messages, chats, groupChats, archivedChats, selectedUser, selectedGroup } = get();
+  const { authUser } = useAuthStore.getState();
+  const socket = useAuthStore.getState().socket;
+  const chatId = groupId || receiverId;
+  const isGroup = !!groupId;
+  roomId = roomId || (isGroup ? groupId : (selectedUser?.roomId || chats.find((c) => c._id === receiverId)?.roomId));
+  
+  if (!chatId || !roomId) return console.log("Invalid chat or room");
+  
+  let isArchived = await get().checkIsChatArchived(chatId, isGroup);
+  if (isArchived) {
+    await axiosInstance.post(`/messages/archive-chat/${chatId}`, { unarchive: true });
+    isArchived = false;
+  }
+  
+  const tempId = `temp-${Date.now()}-${Math.random()}`;
+  const tempMessage = {
+    _id: tempId,
+    text,
+    senderId: authUser,
+    receiverId: isGroup ? null : receiverId,
+    groupId: isGroup ? groupId : null,
+    roomId,
+    attachments: attachments.map((att) => ({
+      attachmentType: att.type,
+      attachmentUrl: att.data,
+      attachmentExt: att.ext ? att.ext.toLowerCase() : att.name.split(".").pop().toLowerCase(),
+      size: att?.size || att?.file?.size,
+      originalName: att.name.toLowerCase(),
+      mimeType: att.mimeType,
+      preview: att.preview || null,
+      duration: att.duration || 0,
+    })),
+    createdAt: new Date(),
+    readBy: isGroup ? [] : [{ userId: authUser._id, readAt: new Date() }],
+    pendingFor: isGroup ? groupChats.find(g => g._id === groupId)?.members.map(m => m._id.toString()).filter(id => id !== authUser._id.toString()) || [] : [receiverId],
+    isEdited: false,
+    reactions: [],
+    isPinned: false,      
+    isForwarded: false,
+    isStarred: false,
+    replyTo: replyTo ? (!isGroup ? {...replyTo, senderId: replyTo.senderId._id, receiverId: replyTo.receiverId._id, groupId: null } : {...replyTo, senderId: replyTo.senderId._id, receiverId: null, groupId: replyTo.groupId }) : null,
+    visibleTo: [],
+  };
+  
+  if ((selectedGroup && groupId === selectedGroup._id) || (selectedUser && receiverId === selectedUser._id)) {
+    set({ messages: [...messages, tempMessage] });
+  }
+  
+  // Update chat lists (same as before)
+  let targetListKey = isGroup ? "groupChats" : "chats";
+  let targetList = isGroup ? groupChats : chats;
+  let updatedChats = chats.filter((c) => c._id !== chatId);
+  let updatedGroupChats = groupChats.filter((c) => c._id !== chatId);
+  let updatedArchivedChats = archivedChats.filter((c) => c._id !== chatId);
+  let updatedList = [...targetList];
+  
+  const chatIndex = updatedList.findIndex((c) => c._id === chatId);
+  let chat;
+  if (chatIndex === -1) {
+    chat = {
+      _id: chatId,
       roomId,
-      attachments: attachments.map((att) => ({
-        attachmentType: att.type,
-        attachmentUrl: att.data,
-        attachmentExt: att.ext ? att.ext.toLowerCase() : att.name.split(".").pop().toLowerCase(),
-        size: att?.size || att?.file?.size,
-        originalName: att.name.toLowerCase(),
-        mimeType: att.mimeType,
-        preview: att.preview || null,
-        duration: att.duration || 0,
-      })),
-      createdAt: new Date(),
-      readBy: isGroup ? [] : [{ userId: authUser._id, readAt: new Date() }],
-      pendingFor: isGroup ? groupChats.find(g => g._id === groupId)?.members.map(m => m._id.toString()).filter(id => id !== authUser._id.toString()) || [] : [receiverId],
-      isEdited: false,
-      reactions: [],
-      isPinned: false,      
-      isForwarded:false,
-      isStarred: false,
-      replyTo: replyTo ? !isGroup ? {...replyTo, senderId: replyTo.senderId._id, receiverId: replyTo.receiverId._id, groupId: null } : {...replyTo, senderId: replyTo.senderId._id, receiverId: null, groupId: replyTo.groupId }: null,
-      visibleTo: [],
-    };
-  console.log({groupId, receiverId, replyTo,  selectedUser, authUser, })
-
-    if ((selectedGroup && groupId === selectedGroup._id) || (selectedUser && receiverId === selectedUser._id)) {
-      set({ messages: [...messages, tempMessage] });
-    }
-
-    let targetListKey = isGroup ? "groupChats" : "chats";
-    let targetList = isGroup ? groupChats : chats;
-    let updatedChats = chats.filter((c) => c._id !== chatId);
-    let updatedGroupChats = groupChats.filter((c) => c._id !== chatId);
-    let updatedArchivedChats = archivedChats.filter((c) => c._id !== chatId);
-    let updatedList = [...targetList];
-
-    const chatIndex = updatedList.findIndex((c) => c._id === chatId);
-    let chat;
-    if (chatIndex === -1) {
-      chat = {
-        _id: chatId,
-        roomId,
-        senderId: authUser._id,
-        members:isGroup ? selectedGroup.members : [],
-        name: isGroup ? selectedGroup?.name : undefined,
-        fullName: isGroup ? undefined : (isForwarded === 'true' && !selectedUser?.fullName) ? ForwardUser.fullName : selectedUser?.fullName,
-        profilePic: isGroup
-          ? selectedGroup?.profilePic || "/avatar.png"
-          : (isForwarded === 'true' && !selectedUser?.profilePic) ? ForwardUser.profilePic : selectedUser?.profilePic || "/avatar.png",
-        recentMessage: {
-          text,
-          attachmentType: attachments[attachments?.length - 1]?.type,
-          originalName: attachments[attachments?.length - 1]?.name.toLowerCase(),
-          createdAt: new Date(),
-          isEdited: false,
-          reactions: [],
-          isPinned: false,
-          isStarred: false,
-          replyTo,
-        },
-        unreadCount: 0,
-      };
-      //   console.log(chat, "chat",isGroup,"isGroup",selectedGroup)
-
-      if (!chat.name && !chat.fullName) return;
-      updatedList.unshift(chat);
-    } else {
-      chat = { ...updatedList[chatIndex], roomId };
-      chat.recentMessage = {
+      senderId: authUser._id,
+      members: isGroup ? selectedGroup.members : [],
+      name: isGroup ? selectedGroup?.name : undefined,
+      fullName: isGroup ? undefined : (isForwarded === 'true' && !selectedUser?.fullName) ? ForwardUser.fullName : selectedUser?.fullName,
+      profilePic: isGroup ? selectedGroup?.profilePic || "/avatar.png" : (isForwarded === 'true' && !selectedUser?.profilePic) ? ForwardUser.profilePic : selectedUser?.profilePic || "/avatar.png",
+      recentMessage: {
         text,
-        senderId: authUser._id,
         attachmentType: attachments[attachments?.length - 1]?.type,
         originalName: attachments[attachments?.length - 1]?.name.toLowerCase(),
         createdAt: new Date(),
@@ -1384,106 +1563,143 @@ console.log("datatata", data)
         isPinned: false,
         isStarred: false,
         replyTo,
-      };
-      chat.unreadCount = 0;
-      updatedList.splice(chatIndex, 1);
-      updatedList.unshift(chat);
+      },
+      unreadCount: 0,
+    };
+    updatedList.unshift(chat);
+  } else {
+    chat = { ...updatedList[chatIndex], roomId };
+    chat.recentMessage = {
+      text,
+      senderId: authUser._id,
+      attachmentType: attachments[attachments?.length - 1]?.type,
+      originalName: attachments[attachments?.length - 1]?.name.toLowerCase(),
+      createdAt: new Date(),
+      isEdited: false,
+      reactions: [],
+      isPinned: false,
+      isStarred: false,
+      replyTo,
+    };
+    chat.unreadCount = 0;
+    updatedList.splice(chatIndex, 1);
+    updatedList.unshift(chat);
+  }
+  
+  set({
+    chats: updatedChats,
+    groupChats: updatedGroupChats,
+    archivedChats: updatedArchivedChats,
+    [targetListKey]: updatedList,
+  });
+  
+  // CRITICAL FIX: Proper FormData construction
+  const formData = new FormData();
+  formData.append("text", text.trim());
+  if (selectedGroup || (isForwarded && groupId)) formData.append("myGroupId", groupId);
+  if (selectedUser || (isForwarded && receiverId)) formData.append("receiverId", receiverId);
+  if (replyTo) formData.append("replyTo", replyTo._id);
+  formData.append("isForwarded", isForwarded);
+  formData.append("roomId", roomId);
+  
+  // Prepare arrays for metadata
+  const types = [];
+  const originalNames = [];
+  const mimeTypes = [];
+  const sizes = [];
+  const durations = [];
+  const previews = [];
+  const attachmentExts = [];
+  const filesURL = [];
+  const dataUrl = []
+  
+  attachments.forEach((attachment, index) => {
+    types.push(attachment.type);
+    originalNames.push(attachment.name.toLowerCase());
+    mimeTypes.push(attachment.mimeType);
+    sizes.push(attachment.size || 0);
+    durations.push(attachment.duration || 0);
+    previews.push(attachment.preview || null);
+    attachmentExts.push(attachment.ext || attachment.name.split('.').pop().toLowerCase());
+    filesURL.push(attachment.data);
+    dataUrl.push(attachment.data)
+    
+    // Only append file for non-forwarded messages
+    if (!isForwarded && attachment.file) {
+      formData.append(`files[${index}]`, attachment.file, attachment.name.toLowerCase());
     }
-    set({
+  });
+  
+  // Append metadata as JSON strings
+  formData.append("types", JSON.stringify(types));
+  formData.append("originalNames", JSON.stringify(originalNames));
+  formData.append("mimeTypes", JSON.stringify(mimeTypes));
+  formData.append("sizes", JSON.stringify(sizes));
+  formData.append("durations", JSON.stringify(durations));
+  formData.append("previews", JSON.stringify(previews));
+  formData.append("dataUrl", JSON.stringify(dataUrl));
+  formData.append("attachmentExts", JSON.stringify(attachmentExts));
+  formData.append("filesURL", JSON.stringify(filesURL));
+  
+  try {
+    const res = await axiosInstance.post("/messages/send", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      timeout: 120000, // 2 minute timeout for large uploads
+    });
+    
+    console.log("Message sent response:", res.data);
+    const newMessage = { ...res.data, roomId };
+    
+    set((state) => ({
+      messages: state.messages.map((msg) =>
+        msg._id === tempId ? { ...newMessage, senderId: authUser, roomId, replyTo: newMessage.replyTo } : msg
+      ),
+      [targetListKey]: state[targetListKey].map((c) =>
+        c._id === chatId
+          ? {
+              ...c,
+              roomId,
+              recentMessage: {
+                text: newMessage.text,
+                attachmentType: newMessage.attachments?.[newMessage.attachments?.length - 1]?.attachmentType,
+                originalName: newMessage.attachments?.[newMessage.attachments?.length - 1]?.originalName,
+                createdAt: newMessage.createdAt,
+                isEdited: newMessage.isEdited,
+                isForwarded: newMessage.isForwarded,
+                reactions: newMessage.reactions,
+                replyTo: newMessage.replyTo,
+              },
+            }
+          : c
+      ),
+    }));
+    
+    if (socket) {
+      socket.emit("sendMessage", {
+        message: newMessage,
+        sender: authUser,
+        chatId,
+        isGroup,
+        roomId,
+      });
+    } else {
+      console.error("Socket not available for sendMessage");
+    }
+  } catch (error) {
+    set((state) => ({
+      messages: state.messages.filter((msg) => msg._id !== tempId),
       chats: updatedChats,
       groupChats: updatedGroupChats,
       archivedChats: updatedArchivedChats,
-      [targetListKey]: updatedList,
-    });
+    }));
+    console.error("Error sending message:", error.response?.data || error.message);
+    throw error;
+  }
+},
 
-      const formData = new FormData();
-      formData.append("text", text.trim());
-      if (selectedGroup || (isForwarded && groupId)) formData.append("myGroupId", groupId);
-      if (selectedUser || (isForwarded && receiverId)) formData.append("receiverId", receiverId);
-      if (replyTo) formData.append("replyTo", replyTo._id);
-      formData.append("isForwarded", isForwarded);
-      formData.append("roomId",roomId);
-
-      attachments.forEach((attachment, index) => {
-      if (!isForwarded)  formData.append(`files[${index}]`, attachment.file, attachment.name.toLowerCase());
-        formData.append(`durations[${index}]`, attachment.duration || 0);
-        formData.append(`types[${index}]`, attachment.type);
-        formData.append(`durations[${index}]`, attachment.duration || 0);
-        formData.append(`originalName[${index}]`, attachment.name.toLowerCase());
-      formData.append(`dataURL[${index}]`, attachment.data);
-
-        formData.append(`names[${index}]`, attachment.name);
-        formData.append(`mimeTypes[${index}]`, attachment.mimeType);
-        formData.append(`preview[${index}]`, attachment.preview || null);
-        if (attachment.ext) formData.append(`attachmentExt[${index}]`, attachment.ext || "mp3");
-        if (attachment.size) formData.append(`size[${index}]`, attachment.size);
-      });
- //console.log(formData ,"formData ")
-    try {
-      // const res = await axiosInstance.post("/messages/send", {
-      // text,
-      // attachments,
-      // groupId,
-      // receiverId,
-      // replyTo,
-      // isForwarded,
-      // roomId,
-      // });
-
-      const res = await axiosInstance.post("/messages/send", formData, {
-      headers: {
-      "Content-Type": "multipart/form-data",
-      },
-      });
-
-      console.log("Message sent response:", res.data);
-      const newMessage = { ...res.data, roomId };
-      set((state) => ({
-      messages: state.messages.map((msg) =>
-      msg._id === tempId ? { ...newMessage, senderId: authUser, roomId, replyTo:newMessage.replyTo } : msg
-      ),
-      [targetListKey]: state[targetListKey].map((c) =>
-      c._id === chatId
-      ? {
-      ...c,
-      roomId,
-      recentMessage: {
-      text: newMessage.text,
-      attachmentType: newMessage.attachments?.[newMessage.attachments?.length - 1]?.attachmentType,
-      originalName: newMessage.attachments?.[newMessage.attachments?.length - 1]?.originalName,
-      createdAt: newMessage.createdAt,
-      isEdited: newMessage.isEdited,
-      isForwarded: newMessage.isForwarded,
-      reactions: newMessage.reactions,
-      replyTo: newMessage.replyTo,
-      },
-      }
-      : c
-      ),
-      }));
-      if (socket) {
-      socket.emit("sendMessage", {
-      message: newMessage,
-      sender: authUser,
-      chatId,
-      isGroup,
-      roomId,
-      });
-      } else {
-      console.error("Socket not available for sendMessage");
-      }
-    } catch (error) {
-      set((state) => ({
-        messages: state.messages.filter((msg) => msg._id !== tempId),
-        chats: updatedChats,
-        groupChats: updatedGroupChats,
-        archivedChats: updatedArchivedChats,
-      }));
-      console.log(error.response?.data?.message || "Error sending message");
-      throw error;
-    }
-  },
-  getGroupChats: async () => {
+getGroupChats: async () => {
   try {
     const res = await axiosInstance.get("/groups/group-chats"); // New endpoint
     set({ groupChats: res.data.map(group => ({ ...group, roomId: group.roomId || group._id })) });

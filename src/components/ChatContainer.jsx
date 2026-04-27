@@ -1102,7 +1102,6 @@ const [showReportModal, setShowReportModal] = useState(false);
     "Illegal activity",
     "Other"
   ];
-  console.log("allRequests",allRequests)
   const [isMinimized, setIsMinimized] = useState(false);
     
   // NEW: Updated handleReportChat to open modal first

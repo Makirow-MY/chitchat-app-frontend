@@ -543,8 +543,8 @@ const filteredgroupRequest =   groupJoinRequests
   const renderAttachment = (item, index, isGrid = false) => {
     if (activeTab === "saved" && item.senderId) {
       const msg = item;
-      const senderName = msg.senderId?.fullName || "Unknown";
-      const isOwnMessage = msg.senderId?._id.toString() === authUser._id.toString();
+      const senderName = (msg && msg.senderId && msg.senderId?.fullName) || "Unknown";
+      const isOwnMessage = (msg && msg.senderId) && msg.senderId?._id.toString() === authUser._id.toString();
 
       if (msg.attachments && msg.attachments.length > 0 && isGrid) {
         return msg.attachments.map((att, attIndex) => {
